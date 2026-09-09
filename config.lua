@@ -188,7 +188,7 @@ Config.Tracker = {
 Config.Jamming = {
   enabled = true,
 
-  item = 'cipher_jammer', -- consumable, used at the player's current position
+  item = 'xs_jammer', -- consumable, used at the player's current position
 
   maxDistance = 60.0, -- meters from the jammer to the drone for it to be affected
   maxActivePerPlayer = 1,

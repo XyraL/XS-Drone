@@ -84,17 +84,17 @@ end
 
 CreateThread(function()
   Framework.CreateUseableItem(Config.Inventory.droneItem, function(source)
-    TriggerEvent('cipher-drone:server:useDroneItem', source)
+    TriggerEvent('XS-Drone:server:useDroneItem', source)
   end)
 
   if Config.Jamming and Config.Jamming.enabled then
     Framework.CreateUseableItem(Config.Jamming.item, function(source)
-      TriggerEvent('cipher-drone:server:useJammerItem', source)
+      TriggerEvent('XS-Drone:server:useJammerItem', source)
     end)
   end
 end)
 
-RegisterNetEvent('cipher-drone:server:useDroneItem', function(forcedSrc)
+RegisterNetEvent('XS-Drone:server:useDroneItem', function(forcedSrc)
   local src = forcedSrc or source
 
   if not isAllowed(src) then
@@ -120,16 +120,16 @@ RegisterNetEvent('cipher-drone:server:useDroneItem', function(forcedSrc)
   Active.pendingPlace = Active.pendingPlace or {}
   Active.pendingPlace[src] = { startedAt = now() }
 
-  TriggerClientEvent('cipher-drone:client:placeMode', src, {})
+  TriggerClientEvent('XS-Drone:client:placeMode', src, {})
 end)
 
-RegisterNetEvent('cipher-drone:server:registerDrone', function(netId)
+RegisterNetEvent('XS-Drone:server:registerDrone', function(netId)
   local src = source
   if not Active.drone[src] then return end
   Active.drone[src].netId = netId
 end)
 
-RegisterNetEvent('cipher-drone:server:end', function(reason)
+RegisterNetEvent('XS-Drone:server:end', function(reason)
   local src = source
   if Active.drone[src] then
     local st = Active.drone[src]
@@ -139,10 +139,10 @@ RegisterNetEvent('cipher-drone:server:end', function(reason)
     Active.drone[src] = nil
     setCooldown(Active.cooldown, src, Config.General.droneCooldownSeconds)
   end
-  TriggerClientEvent('cipher-drone:client:forceEnd', src, reason or 'ended')
+  TriggerClientEvent('XS-Drone:client:forceEnd', src, reason or 'ended')
 end)
 
-RegisterNetEvent('cipher-drone:server:statusTick', function(data)
+RegisterNetEvent('XS-Drone:server:statusTick', function(data)
   local src = source
   local st = Active.drone[src]
   if not st then return end
@@ -154,17 +154,17 @@ RegisterNetEvent('cipher-drone:server:statusTick', function(data)
   end
 
   if st.battery <= 0 then
-    TriggerEvent('cipher-drone:server:end', 'battery')
+    TriggerEvent('XS-Drone:server:end', 'battery')
     return
   end
 
   if st.rangeOverAt > 0 and (now() - st.rangeOverAt) >= Config.Drone.rangeGraceSeconds then
-    TriggerEvent('cipher-drone:server:end', 'range')
+    TriggerEvent('XS-Drone:server:end', 'range')
     return
   end
 end)
 
-RegisterNetEvent('cipher-drone:server:trackerHit', function(payload)
+RegisterNetEvent('XS-Drone:server:trackerHit', function(payload)
   local src = source
   if not Config.Tracker.enabled then return end
   if not Active.drone[src] then return end
@@ -208,13 +208,13 @@ RegisterNetEvent('cipher-drone:server:trackerHit', function(payload)
   Active.trackerByOwner[src] = owned + 1
 
   if targetType == 'ped' and payload and tonumber(payload.targetServerId or 0) > 0 then
-    TriggerClientEvent('cipher-drone:client:trackerAttachedSelf', tonumber(payload.targetServerId), {
+    TriggerClientEvent('XS-Drone:client:trackerAttachedSelf', tonumber(payload.targetServerId), {
       trackerId = trackerId,
       expiresAt = Active.trackers[trackerId].expiresAt
     })
   end
 
-  TriggerClientEvent('cipher-drone:client:trackerStatus', src, { cooldown = Config.Tracker.cooldownSeconds })
+  TriggerClientEvent('XS-Drone:client:trackerStatus', src, { cooldown = Config.Tracker.cooldownSeconds })
   Framework.Notify(src, 'Tracker dart attached.', 'success')
 end)
 
@@ -229,7 +229,7 @@ local function removeTrackersByTarget(targetType, targetNet)
       if owner then
         Active.trackerByOwner[owner] = math.max(0, (Active.trackerByOwner[owner] or 1) - 1)
       end
-      TriggerClientEvent('cipher-drone:client:trackerExpired', -1, { trackerId = id })
+      TriggerClientEvent('XS-Drone:client:trackerExpired', -1, { trackerId = id })
     end
   end
   return removed
@@ -243,7 +243,7 @@ local function removeTrackerId(id)
   if owner then
     Active.trackerByOwner[owner] = math.max(0, (Active.trackerByOwner[owner] or 1) - 1)
   end
-  TriggerClientEvent('cipher-drone:client:trackerExpired', -1, { trackerId = id })
+  TriggerClientEvent('XS-Drone:client:trackerExpired', -1, { trackerId = id })
   return true
 end
 
@@ -270,7 +270,7 @@ CreateThread(function()
       if tr.expiresAt <= tNow then
         -- expire
         Active.trackers[id] = nil
-        TriggerClientEvent('cipher-drone:client:trackerExpired', -1, { trackerId = id })
+        TriggerClientEvent('XS-Drone:client:trackerExpired', -1, { trackerId = id })
         local owner = tr.owner
         if owner then
           Active.trackerByOwner[owner] = math.max(0, (Active.trackerByOwner[owner] or 1) - 1)
@@ -278,7 +278,7 @@ CreateThread(function()
       else
         local owner = tr.owner
         if owner and tonumber(owner) and GetPlayerName(tostring(owner)) then
-          TriggerClientEvent('cipher-drone:client:trackerPing', owner, {
+          TriggerClientEvent('XS-Drone:client:trackerPing', owner, {
             trackerId = id,
             targetType = tr.targetType,
             targetNet = tr.targetNet,
@@ -293,7 +293,7 @@ CreateThread(function()
         for _, plyId in ipairs(GetPlayers()) do
           local v = tonumber(plyId)
           if v and canViewTracker(v) then
-            TriggerClientEvent('cipher-drone:client:trackerPing', v, {
+            TriggerClientEvent('XS-Drone:client:trackerPing', v, {
               trackerId = id,
               targetType = tr.targetType,
               targetNet = tr.targetNet,
@@ -345,7 +345,7 @@ if Config.Tracker.counterplay and Config.Tracker.counterplay.enabled then
     end
   end)
 
-  RegisterNetEvent('cipher-drone:server:decayTracker', function(trackerId, secondsToReduce)
+  RegisterNetEvent('XS-Drone:server:decayTracker', function(trackerId, secondsToReduce)
     local src = source
     if type(trackerId) ~= 'string' then return end
     secondsToReduce = tonumber(secondsToReduce or 0) or 0
@@ -385,7 +385,7 @@ local function removeJammerId(id)
   return true
 end
 
-RegisterNetEvent('cipher-drone:server:useJammerItem', function(forcedSrc)
+RegisterNetEvent('XS-Drone:server:useJammerItem', function(forcedSrc)
   local src = forcedSrc or source
   local cfg = Config.Jamming
   if not cfg or not cfg.enabled then return end
@@ -466,7 +466,7 @@ CreateThread(function()
 
       if isJammed ~= jammedState[src] then
         jammedState[src] = isJammed
-        TriggerClientEvent('cipher-drone:client:jammed', src, isJammed)
+        TriggerClientEvent('XS-Drone:client:jammed', src, isJammed)
       end
     end
 
@@ -506,7 +506,7 @@ AddEventHandler('playerDropped', function()
 end)
 
 
-RegisterNetEvent('cipher-drone:server:removeVehicleTrackers', function(vehicleNet)
+RegisterNetEvent('XS-Drone:server:removeVehicleTrackers', function(vehicleNet)
   local src = source
   if not (Config.Tracker and Config.Tracker.counterplay and Config.Tracker.counterplay.enabled) then return end
   local vr = Config.Tracker.counterplay.vehicleRemoval
@@ -577,13 +577,13 @@ end)
 
 
 
-RegisterNetEvent('cipher-drone:server:recallRequest', function()
+RegisterNetEvent('XS-Drone:server:recallRequest', function()
   local src = source
   if not Active.drone[src] then return end
-  TriggerEvent('cipher-drone:server:end', 'recall')
+  TriggerEvent('XS-Drone:server:end', 'recall')
 end)
 
-RegisterNetEvent('cipher-drone:server:placeConfirm', function(payload)
+RegisterNetEvent('XS-Drone:server:placeConfirm', function(payload)
   local src = source
   if not payload or type(payload) ~= 'table' then return end
   if not Active.pendingPlace or not Active.pendingPlace[src] then return end
@@ -625,11 +625,11 @@ RegisterNetEvent('cipher-drone:server:placeConfirm', function(payload)
 
   removeItem(src, Config.Inventory.droneItem, 1)
 
-  TriggerClientEvent('cipher-drone:client:placed', src, { netId = netId })
+  TriggerClientEvent('XS-Drone:client:placed', src, { netId = netId })
   Framework.Notify(src, 'Drone placed. Target it to connect.', 'success')
 end)
 
-RegisterNetEvent('cipher-drone:server:packDrone', function(netId)
+RegisterNetEvent('XS-Drone:server:packDrone', function(netId)
   local src = source
   netId = tonumber(netId or 0) or 0
   if netId <= 0 then return end
@@ -649,7 +649,7 @@ RegisterNetEvent('cipher-drone:server:packDrone', function(netId)
     return
   end
 
-  TriggerClientEvent('cipher-drone:client:deletePlaced', src, netId)
+  TriggerClientEvent('XS-Drone:client:deletePlaced', src, netId)
 
   Active.placed[netId] = nil
   Active.placedByOwner[src] = nil
@@ -658,7 +658,7 @@ RegisterNetEvent('cipher-drone:server:packDrone', function(netId)
   Framework.Notify(src, 'Drone packed.', 'success')
 end)
 
-RegisterNetEvent('cipher-drone:server:connectPlaced', function(netId)
+RegisterNetEvent('XS-Drone:server:connectPlaced', function(netId)
   local src = source
   netId = tonumber(netId or 0) or 0
   if netId <= 0 then return end
@@ -695,5 +695,5 @@ RegisterNetEvent('cipher-drone:server:connectPlaced', function(netId)
     placed = true,
   }
 
-  TriggerClientEvent('cipher-drone:client:start', src, { battery = Active.drone[src].battery, netId = netId })
+  TriggerClientEvent('XS-Drone:client:start', src, { battery = Active.drone[src].battery, netId = netId })
 end)

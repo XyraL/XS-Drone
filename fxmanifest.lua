@@ -2,9 +2,9 @@ fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
 
-name 'cipher-drone'
+name 'XS-Drone'
 author 'XyraL'
-description 'Cipher — Drone. Deployable police drone with live cam, thermal, spotlight, tracker darts, shoot-down, and criminal-side jamming counterplay.'
+description 'Deployable police drone with live cam, thermal, spotlight, tracker darts, shoot-down, and criminal-side jamming counterplay.'
 version '2.0.0'
 
 shared_scripts {

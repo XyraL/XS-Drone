@@ -15,7 +15,7 @@ elseif GetResourceState('qb-core') == 'started' then
     Framework.core = exports['qb-core']:GetCoreObject()
 else
     -- Defer the error so the resource still loads its UI; log loudly.
-    print('^1[cipher-drone]^0 No supported framework found. Start qbx_core or qb-core before cipher-drone.')
+    print('^1[XS-Drone]^0 No supported framework found. Start qbx_core or qb-core before XS-Drone.')
 end
 
 local IS_SERVER = IsDuplicityVersion()
@@ -65,7 +65,7 @@ if IS_SERVER then
         elseif Framework.core then
             TriggerClientEvent('QBCore:Notify', src, msg, type or 'inform')
         else
-            print(('[cipher-drone] %s'):format(msg))
+            print(('[XS-Drone] %s'):format(msg))
         end
     end
 else
@@ -99,12 +99,12 @@ else
         elseif Framework.core then
             TriggerEvent('QBCore:Notify', msg, type or 'inform')
         else
-            print(('[cipher-drone] %s'):format(msg))
+            print(('[XS-Drone] %s'):format(msg))
         end
     end
 end
 
 if Config and Config.Debug then
-    print(('^2[cipher-drone]^0 bridge loaded (%s) on %s'):format(
+    print(('^2[XS-Drone]^0 bridge loaded (%s) on %s'):format(
         Framework.name or 'none', IS_SERVER and 'server' or 'client'))
 end

@@ -229,15 +229,15 @@ local function MinimapLockToDrone(enable)
   end
 end
 
-RegisterNetEvent('cipher-drone:client:useItem', function()
-  TriggerServerEvent('cipher-drone:server:useDroneItem')
+RegisterNetEvent('XS-Drone:client:useItem', function()
+  TriggerServerEvent('XS-Drone:server:useDroneItem')
 end)
 
 -- ox_inventory hook point for QBox, since qbx_core has no server-side
 -- useable-item registration API. Point the jammer item's ox_inventory
 -- `client.event` at this.
-RegisterNetEvent('cipher-drone:client:useJammerItem', function()
-  TriggerServerEvent('cipher-drone:server:useJammerItem')
+RegisterNetEvent('XS-Drone:client:useJammerItem', function()
+  TriggerServerEvent('XS-Drone:server:useJammerItem')
 end)
 
 local function nui(show)
@@ -398,7 +398,7 @@ local function cleanup(reason)
   state.jammed = false
 end
 
-RegisterNetEvent('cipher-drone:client:start', function(data)
+RegisterNetEvent('XS-Drone:client:start', function(data)
   if state.active then return end
 
   state.batteryMax = Config.Drone.batterySeconds
@@ -462,7 +462,7 @@ RegisterNetEvent('cipher-drone:client:start', function(data)
   if not state.usingPlaced then
     NetworkRegisterEntityAsNetworked(obj)
     SetNetworkIdExistsOnAllMachines(state.droneNet, true)
-    TriggerServerEvent('cipher-drone:server:registerDrone', state.droneNet)
+    TriggerServerEvent('XS-Drone:server:registerDrone', state.droneNet)
   end
 
   -- control mode (main HUD panel reveals after boot, not before)
@@ -505,7 +505,7 @@ RegisterNetEvent('cipher-drone:client:start', function(data)
       nuiUpdate()
       sendRadarUpdate()
       local dp = (state.drone and state.drone ~= 0 and DoesEntityExist(state.drone)) and GetEntityCoords(state.drone) or nil
-      TriggerServerEvent('cipher-drone:server:statusTick', {
+      TriggerServerEvent('XS-Drone:server:statusTick', {
         battery = state.battery,
         rangeOverAt = state.rangeOverAt,
         pos = dp and { x = dp.x, y = dp.y, z = dp.z } or nil,
@@ -651,7 +651,7 @@ RegisterNetEvent('cipher-drone:client:start', function(data)
       end
 
       if IsDisabledControlJustPressed(0, 177) then
-        TriggerServerEvent('cipher-drone:server:end', 'manual')
+        TriggerServerEvent('XS-Drone:server:end', 'manual')
         MinimapLockToDrone(false)
         if droneMapBlip and DoesBlipExist(droneMapBlip) then RemoveBlip(droneMapBlip) droneMapBlip=nil end
         return
@@ -773,7 +773,7 @@ RegisterNetEvent('cipher-drone:client:start', function(data)
         state.battery = math.max(0, state.battery - 1)
 
         if state.battery <= 0 then
-          TriggerServerEvent('cipher-drone:server:end', 'battery')
+          TriggerServerEvent('XS-Drone:server:end', 'battery')
           MinimapLockToDrone(false)
           if droneMapBlip and DoesBlipExist(droneMapBlip) then RemoveBlip(droneMapBlip) droneMapBlip=nil end
           return
@@ -799,7 +799,7 @@ RegisterNetEvent('cipher-drone:client:start', function(data)
             if droneMapBlip and DoesBlipExist(droneMapBlip) then RemoveBlip(droneMapBlip) droneMapBlip=nil end
             if DoesEntityExist(droneObj) and not state.usingPlaced then DeleteEntity(droneObj) end
 
-            TriggerServerEvent('cipher-drone:server:end', 'destroyed')
+            TriggerServerEvent('XS-Drone:server:end', 'destroyed')
             return
           end
         end
@@ -809,7 +809,7 @@ RegisterNetEvent('cipher-drone:client:start', function(data)
 
 end)
 
-RegisterNetEvent('cipher-drone:client:forceEnd', function(reason)
+RegisterNetEvent('XS-Drone:client:forceEnd', function(reason)
   cleanup(reason)
 end)
 
@@ -819,7 +819,7 @@ end)
 -- a drone session began, stacking duplicate handlers over a play session).
 if Framework.HasOxLib() and type(lib) == 'table' then
   lib.addKeybind({
-    name = 'cipher_drone_spotlight',
+    name = 'xs_drone_spotlight',
     description = 'Drone: Toggle Spotlight',
     defaultKey = Config.Keybinds.spotlight,
     onPressed = function()
@@ -830,7 +830,7 @@ if Framework.HasOxLib() and type(lib) == 'table' then
   })
 
   lib.addKeybind({
-    name = 'cipher_drone_thermal',
+    name = 'xs_drone_thermal',
     description = 'Drone: Toggle Thermal',
     defaultKey = Config.Keybinds.thermal,
     onPressed = function()
@@ -857,7 +857,7 @@ if Framework.HasOxLib() and type(lib) == 'table' then
   })
 
   lib.addKeybind({
-    name = 'cipher_drone_ping',
+    name = 'xs_drone_ping',
     description = 'Drone: Ping Marker',
     defaultKey = Config.Keybinds.ping,
     onPressed = function()
@@ -869,17 +869,17 @@ if Framework.HasOxLib() and type(lib) == 'table' then
   })
 
   lib.addKeybind({
-    name = 'cipher_drone_recall',
+    name = 'xs_drone_recall',
     description = 'Drone: Recall / Exit',
     defaultKey = Config.Keybinds.recall,
     onPressed = function()
       if not state.active then return end
-      TriggerServerEvent('cipher-drone:server:end', 'recall')
+      TriggerServerEvent('XS-Drone:server:end', 'recall')
     end
   })
 
   lib.addKeybind({
-    name = 'cipher_drone_tracker',
+    name = 'xs_drone_tracker',
     description = 'Drone: Fire Tracker Dart',
     defaultKey = Config.Keybinds.tracker,
     onPressed = function()
@@ -904,7 +904,7 @@ if Framework.HasOxLib() and type(lib) == 'table' then
 
       if hit == 1 and entityHit and entityHit ~= 0 then
         if IsEntityAPed(entityHit) and IsPedAPlayer(entityHit) then
-          TriggerServerEvent('cipher-drone:server:trackerHit', {
+          TriggerServerEvent('XS-Drone:server:trackerHit', {
             targetType = 'ped',
             targetNet = NetworkGetNetworkIdFromEntity(entityHit),
             targetServerId = GetPlayerServerId(NetworkGetPlayerIndexFromPed(entityHit)),
@@ -913,7 +913,7 @@ if Framework.HasOxLib() and type(lib) == 'table' then
         end
 
         if IsEntityAVehicle(entityHit) then
-          TriggerServerEvent('cipher-drone:server:trackerHit', {
+          TriggerServerEvent('XS-Drone:server:trackerHit', {
             targetType = 'veh',
             targetNet = NetworkGetNetworkIdFromEntity(entityHit),
           })
@@ -926,13 +926,13 @@ if Framework.HasOxLib() and type(lib) == 'table' then
   })
 end
 
-RegisterNetEvent('cipher-drone:client:trackerStatus', function(data)
+RegisterNetEvent('XS-Drone:client:trackerStatus', function(data)
   if not Config.UI.enabled then return end
   SendNUIMessage({ type = 'trackerCd', seconds = data and data.cooldown or 0 })
 end)
 
 -- Viewer pings for jobs/perms: create/update blips client-side
-RegisterNetEvent('cipher-drone:client:trackerPing', function(data)
+RegisterNetEvent('XS-Drone:client:trackerPing', function(data)
   if not data or not data.trackerId or not data.targetNet then return end
 
   local ent = NetToEnt(data.targetNet)
@@ -996,14 +996,14 @@ end)
 -- meant every key press fired both handlers at once).
 if not Framework.HasOxLib() then
 
-RegisterCommand('cipher_drone_spotlight', function()
+RegisterCommand('xs_drone_spotlight', function()
   if not state.active then return end
   state.spotlight = not state.spotlight
   nuiUpdate()
 end, false)
-RegisterKeyMapping('cipher_drone_spotlight', 'Drone: Toggle Spotlight', 'keyboard', Config.Keybinds.spotlight)
+RegisterKeyMapping('xs_drone_spotlight', 'Drone: Toggle Spotlight', 'keyboard', Config.Keybinds.spotlight)
 
-RegisterCommand('cipher_drone_thermal', function()
+RegisterCommand('xs_drone_thermal', function()
   if not state.active then return end
   if not Config.Camera.enableThermal then return end
   state.thermal = not state.thermal
@@ -1024,9 +1024,9 @@ RegisterCommand('cipher_drone_thermal', function()
   end
   nuiUpdate()
 end, false)
-RegisterKeyMapping('cipher_drone_thermal', 'Drone: Toggle Thermal', 'keyboard', Config.Keybinds.thermal)
+RegisterKeyMapping('xs_drone_thermal', 'Drone: Toggle Thermal', 'keyboard', Config.Keybinds.thermal)
 
-RegisterCommand('cipher_drone_ping', function()
+RegisterCommand('xs_drone_ping', function()
   if not state.active then return end
 
   local id = state.lastTrackerId
@@ -1051,15 +1051,15 @@ RegisterCommand('cipher_drone_ping', function()
     Framework.Notify('Tracker route cleared.', 'success')
   end
 end, false)
-RegisterKeyMapping('cipher_drone_ping', 'Drone: Ping Marker', 'keyboard', Config.Keybinds.ping)
+RegisterKeyMapping('xs_drone_ping', 'Drone: Ping Marker', 'keyboard', Config.Keybinds.ping)
 
-RegisterCommand('cipher_drone_recall', function()
+RegisterCommand('xs_drone_recall', function()
   if not state.active then return end
-  TriggerServerEvent('cipher-drone:server:end', 'recall')
+  TriggerServerEvent('XS-Drone:server:end', 'recall')
 end, false)
-RegisterKeyMapping('cipher_drone_recall', 'Drone: Recall / Exit', 'keyboard', Config.Keybinds.recall)
+RegisterKeyMapping('xs_drone_recall', 'Drone: Recall / Exit', 'keyboard', Config.Keybinds.recall)
 
-RegisterCommand('cipher_drone_tracker', function()
+RegisterCommand('xs_drone_tracker', function()
   if not state.active then return end
   if not Config.Tracker.enabled then return end
 
@@ -1119,26 +1119,26 @@ RegisterCommand('cipher_drone_tracker', function()
       payload.targetServerId = sid
     end
 
-    TriggerServerEvent('cipher-drone:server:trackerHit', payload)
+    TriggerServerEvent('XS-Drone:server:trackerHit', payload)
     return
   end
 
   if IsEntityAVehicle(entityHit) then
     payload.targetType = 'veh'
     payload.targetNet = NetworkGetNetworkIdFromEntity(entityHit)
-    TriggerServerEvent('cipher-drone:server:trackerHit', payload)
+    TriggerServerEvent('XS-Drone:server:trackerHit', payload)
     return
   end
 
   Framework.Notify('No valid target for tracker.', 'error')
 end, false)
-RegisterKeyMapping('cipher_drone_tracker', 'Drone: Fire Tracker Dart', 'keyboard', Config.Keybinds.tracker)
+RegisterKeyMapping('xs_drone_tracker', 'Drone: Fire Tracker Dart', 'keyboard', Config.Keybinds.tracker)
 
 end -- if not Framework.HasOxLib()
 
 
 
-RegisterNetEvent('cipher-drone:client:trackerExpired', function(data)
+RegisterNetEvent('XS-Drone:client:trackerExpired', function(data)
   if not data or not data.trackerId then return end
   local blip = trackerBlips[data.trackerId]
   if blip and DoesBlipExist(blip) then
@@ -1149,14 +1149,14 @@ end)
 
 -- If YOU are the tracked target (ped), we can apply environment decay (rain/water) client-side and report to server
 local selfTrackers = {} -- [trackerId] = expiresAt
-RegisterNetEvent('cipher-drone:client:trackerAttachedSelf', function(data)
+RegisterNetEvent('XS-Drone:client:trackerAttachedSelf', function(data)
   if not data or not data.trackerId then return end
   selfTrackers[data.trackerId] = tonumber(data.expiresAt or 0) or 0
 end)
 
 -- Server is authoritative on jammed state (distance-tick against active
 -- jammers); we only render the degraded-control effect here.
-RegisterNetEvent('cipher-drone:client:jammed', function(isJammed)
+RegisterNetEvent('XS-Drone:client:jammed', function(isJammed)
   state.jammed = isJammed and true or false
   if not state.jammed then
     state.jamLookMult = 1.0
@@ -1195,7 +1195,7 @@ CreateThread(function()
     if decay <= 0 then goto continue end
 
     for trackerId, _ in pairs(selfTrackers) do
-      TriggerServerEvent('cipher-drone:server:decayTracker', trackerId, decay)
+      TriggerServerEvent('XS-Drone:server:decayTracker', trackerId, decay)
     end
 
     ::continue::
@@ -1279,7 +1279,7 @@ do
       -- E
       if IsControlJustPressed(0, 38) then
         local netId = NetworkGetNetworkIdFromEntity(veh)
-        TriggerServerEvent('cipher-drone:server:removeVehicleTrackers', netId)
+        TriggerServerEvent('XS-Drone:server:removeVehicleTrackers', netId)
         Wait(1000)
       end
 
@@ -1323,7 +1323,7 @@ end)
 
 
 
-RegisterNetEvent('cipher-drone:client:placeMode', function()
+RegisterNetEvent('XS-Drone:client:placeMode', function()
   if state.active or state.placedMode then return end
   state.placedMode = true
 
@@ -1387,7 +1387,7 @@ RegisterNetEvent('cipher-drone:client:placeMode', function()
 
         SetNetworkIdExistsOnAllMachines(netId, true)
         SetNetworkIdCanMigrate(netId, true)
-        TriggerServerEvent('cipher-drone:server:placeConfirm', { netId = netId, x = place.x, y = place.y, z = place.z, h = heading })
+        TriggerServerEvent('XS-Drone:server:placeConfirm', { netId = netId, x = place.x, y = place.y, z = place.z, h = heading })
         return
       end
 
@@ -1404,7 +1404,7 @@ RegisterNetEvent('cipher-drone:client:placeMode', function()
   end)
 end)
 
-RegisterNetEvent('cipher-drone:client:placed', function(data)
+RegisterNetEvent('XS-Drone:client:placed', function(data)
   -- placeholder (ox_target handles interaction)
 end)
 
@@ -1412,7 +1412,7 @@ CreateThread(function()
   if GetResourceState('ox_target') ~= 'started' then return end
   exports.ox_target:addModel({ Config.Drone.model }, {
     {
-      name = 'cipher_drone_connect',
+      name = 'xs_drone_connect',
       icon = 'fa-solid fa-satellite-dish',
       label = 'Connect / Fly Drone',
       distance = 2.0,
@@ -1422,11 +1422,11 @@ CreateThread(function()
       onSelect = function(data)
         local ent = data.entity
         if not ent or ent == 0 then return end
-        TriggerServerEvent('cipher-drone:server:connectPlaced', NetworkGetNetworkIdFromEntity(ent))
+        TriggerServerEvent('XS-Drone:server:connectPlaced', NetworkGetNetworkIdFromEntity(ent))
       end
     },
     {
-      name = 'cipher_drone_pack',
+      name = 'xs_drone_pack',
       icon = 'fa-solid fa-box',
       label = 'Pack Drone',
       distance = 2.0,
@@ -1436,14 +1436,14 @@ CreateThread(function()
       onSelect = function(data)
         local ent = data.entity
         if not ent or ent == 0 then return end
-        TriggerServerEvent('cipher-drone:server:packDrone', NetworkGetNetworkIdFromEntity(ent))
+        TriggerServerEvent('XS-Drone:server:packDrone', NetworkGetNetworkIdFromEntity(ent))
       end
     }
   })
 end)
 
 
-RegisterNetEvent('cipher-drone:client:deletePlaced', function(netId)
+RegisterNetEvent('XS-Drone:client:deletePlaced', function(netId)
   netId = tonumber(netId or 0) or 0
   if netId <= 0 then return end
   local ent = NetToObj(netId)

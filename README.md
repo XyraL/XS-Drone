@@ -1,19 +1,19 @@
-<h1 align="center">Cipher Drone</h1>
+<h1 align="center">XS-Drone</h1>
 
 <p align="center">A deployable police drone for <strong>QBox</strong> and <strong>QBCore</strong> — smooth flight, thermal, spotlight, tracker darts and real counterplay.</p>
 
 <p align="center">
-  <a href="https://github.com/XyraL/cipher-drone/releases"><img src="https://img.shields.io/github/v/release/XyraL/cipher-drone?style=flat-square&color=a889ff&label=release" alt="Latest release"></a>
+  <a href="https://github.com/XyraL/XS-Drone/releases"><img src="https://img.shields.io/github/v/release/XyraL/XS-Drone?style=flat-square&color=a889ff&label=release" alt="Latest release"></a>
   <img src="https://img.shields.io/badge/framework-QBox%20%7C%20QBCore-55dcff?style=flat-square" alt="framework">
   <img src="https://img.shields.io/badge/price-free-30d158?style=flat-square" alt="price">
-  <a href="https://xyralscripts.dev/docs-cipher-drone"><img src="https://img.shields.io/badge/docs-xyralscripts.dev-a889ff?style=flat-square" alt="docs"></a>
+  <a href="https://xyralscripts.dev/docs-xs-drone"><img src="https://img.shields.io/badge/docs-xyralscripts.dev-a889ff?style=flat-square" alt="docs"></a>
   <a href="https://discord.gg/XRURAw4TM2"><img src="https://img.shields.io/badge/support-discord-5865F2?style=flat-square" alt="support"></a>
 </p>
 
 <p align="center">
-  <a href="https://xyralscripts.dev/cipher-drone">Website</a> &nbsp;·&nbsp;
-  <a href="https://xyralscripts.dev/docs-cipher-drone">Setup guide</a> &nbsp;·&nbsp;
-  <a href="https://github.com/XyraL/cipher-drone/releases">Releases</a> &nbsp;·&nbsp;
+  <a href="https://xyralscripts.dev/xs-drone">Website</a> &nbsp;·&nbsp;
+  <a href="https://xyralscripts.dev/docs-xs-drone">Setup guide</a> &nbsp;·&nbsp;
+  <a href="https://github.com/XyraL/XS-Drone/releases">Releases</a> &nbsp;·&nbsp;
   <a href="https://discord.gg/XRURAw4TM2">Discord</a>
 </p>
 
@@ -45,10 +45,10 @@
 
 ## Install
 
-1. Drop the `cipher-drone` folder into your `resources`.
-2. Add `ensure cipher-drone` to your `server.cfg`.
-3. Add the drone item to your inventory system — item name is `pd_drone` (kept as-is from the original release for compatibility with existing inventory configs, not renamed to a `cipher_`-prefixed name).
-4. If you're using the jamming system, also add the `cipher_jammer` consumable item to your inventory config.
+1. Drop the `XS-Drone` folder into your `resources`.
+2. Add `ensure XS-Drone` to your `server.cfg`.
+3. Add the drone item to your inventory system — item name is `pd_drone` (kept as-is from the original release for compatibility with existing inventory configs, not renamed to an `xs_`-prefixed name).
+4. If you're using the jamming system, also add the `xs_jammer` consumable item to your inventory config.
 5. Tune `config.lua` — see the callout below before you go live.
 6. Restart the resource.
 
@@ -78,7 +78,7 @@ Set `canBeShotDown = false` to make the drone immune to gunfire instead
 ### Jamming
 
     Config.Jamming.enabled = true
-    Config.Jamming.item = 'cipher_jammer'
+    Config.Jamming.item = 'xs_jammer'
     Config.Jamming.maxDistance = 60.0        -- meters from the jammer to the drone
     Config.Jamming.durationSeconds = 20
     Config.Jamming.cooldownSeconds = 90
@@ -117,10 +117,10 @@ access, so it's safe to leave as-is even for offline/LAN setups.
 
 ## Before going live
 
-- **QBox + ox_inventory**: qbx_core has no server-side "useable item" registration API (unlike qb-core), so the drone and jammer items won't do anything out of the box. In your ox_inventory item definitions, set `client.event` to `cipher-drone:client:useItem` for the drone item and `cipher-drone:client:useJammerItem` for the jammer item. On qb-core this is automatic via `Framework.CreateUseableItem` — no item config changes needed.
+- **QBox + ox_inventory**: qbx_core has no server-side "useable item" registration API (unlike qb-core), so the drone and jammer items won't do anything out of the box. In your ox_inventory item definitions, set `client.event` to `XS-Drone:client:useItem` for the drone item and `XS-Drone:client:useJammerItem` for the jammer item. On qb-core this is automatic via `Framework.CreateUseableItem` — no item config changes needed.
 - `Config.Drone.model` is a placeholder prop (`ch_prop_casino_drone_02a`) — verify it spawns correctly on your build, or swap in your own.
 - `Config.Tracker.counterplay.vehicleRemoval.zones` ships empty — add your own bay coords or vehicle-tracker removal won't have anywhere to happen.
-- Item name `pd_drone` is unchanged from the original release; the new jammer item (`cipher_jammer`) needs adding to your inventory config since it's net-new.
+- Item name `pd_drone` is unchanged from the original release; the new jammer item (`xs_jammer`) needs adding to your inventory config since it's net-new.
 - If you're not running `ox_lib`, keybinds fall back to native `RegisterKeyMapping`/`RegisterCommand` — players can rebind these from the FiveM pause menu keybind settings.
 
 ## Notes
@@ -138,25 +138,25 @@ access, so it's safe to leave as-is even for offline/LAN setups.
 ## Documentation
 
 Full setup guide, requirements and troubleshooting:
-**[xyralscripts.dev/docs-cipher-drone](https://xyralscripts.dev/docs-cipher-drone)**
+**[xyralscripts.dev/docs-xs-drone](https://xyralscripts.dev/docs-xs-drone)**
 
 ## Support
 
-- **Found a bug?** [Open an issue](https://github.com/XyraL/cipher-drone/issues)
+- **Found a bug?** [Open an issue](https://github.com/XyraL/XS-Drone/issues)
 - **Need setup help?** [Join the Discord](https://discord.gg/XRURAw4TM2) — check the setup guide first, it usually has the answer
 
-## The rest of the Cipher line
+## My other scripts
 
 All free, all source-available.
 
 | Script | What it is |
 |---|---|
-| **[Cipher](https://github.com/XyraL/cipher)** | modular criminal device for QBox and QBCore — gang ops, blackmarket and boosting in one encrypted tablet. |
-| **[Cipher MDT](https://github.com/XyraL/cipher-mdt)** | multi-department MDT for QBox — police, EMS and fire with live CAD, records, patient care and a live unit map. |
-| **[Cipher Admin](https://github.com/XyraL/cipher-admin)** | advanced admin suite for QBox and QBCore — player management, bans, reports, inventory tools and entity inspection. |
-| **[Cipher Trucking](https://github.com/XyraL/cipher-trucking)** | civilian trucking job for QBox and QBCore — live route map, truck ownership, fuel and maintenance, and companies. |
-| **[Cipher MultiCharacter](https://github.com/XyraL/cipher-multicharacter)** | cinematic character selection for QBox and QBCore — identity dossiers, saved appearances, spawn cameras and configurable slots. |
-| **[Cipher Dispatch](https://github.com/XyraL/cipher-dispatch)** | multi-department live dispatch for QBox and QBCore — responder tracking, priority calls, TAC radio and provider integrations. |
+| **[XS-CriminalTablet](https://github.com/XyraL/XS-CriminalTablet)** | modular criminal device for QBox and QBCore — gang ops, blackmarket and boosting in one encrypted tablet. |
+| **[XS-MDT](https://github.com/XyraL/XS-MDT)** | multi-department MDT for QBox — police, EMS and fire with live CAD, records, patient care and a live unit map. |
+| **[XS-AdminMenu](https://github.com/XyraL/XS-AdminMenu)** | advanced admin suite for QBox and QBCore — player management, bans, reports, inventory tools and entity inspection. |
+| **[XS-Trucking](https://github.com/XyraL/XS-Trucking)** | civilian trucking job for QBox and QBCore — live route map, truck ownership, fuel and maintenance, and companies. |
+| **[XS-MultiCharacter](https://github.com/XyraL/XS-MultiCharacter)** | cinematic character selection for QBox and QBCore — identity dossiers, saved appearances, spawn cameras and configurable slots. |
+| **[XS-Dispatch](https://github.com/XyraL/XS-Dispatch)** | multi-department live dispatch for QBox and QBCore — responder tracking, priority calls, TAC radio and provider integrations. |
 
 ## License
 
