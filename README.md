@@ -36,6 +36,7 @@
 - **Jamming**: a criminal-side deployable that degrades a nearby operator's control (jitter/drift), not a hard kill
 - Minimap follows drone, battery system, job restrictions
 - ox_inventory / qb-inventory support
+- Item icons for all three items included in `inventory_images/`
 
 ## Requirements
 
@@ -47,10 +48,71 @@
 
 1. Drop the `XS-Drone` folder into your `resources`.
 2. Add `ensure XS-Drone` to your `server.cfg`.
-3. Add the drone item to your inventory system — item name is `pd_drone` (kept as-is from the original release for compatibility with existing inventory configs, not renamed to an `xs_`-prefixed name).
-4. If you're using the jamming system, also add the `xs_jammer` consumable item to your inventory config.
-5. Tune `config.lua` — see the callout below before you go live.
-6. Restart the resource.
+3. Add the items — see below.
+4. Tune `config.lua` — see the callout below before you go live.
+5. Restart the resource.
+
+## Items
+
+Three, and only the first is required. `pd_drone` keeps its name from the
+original release so existing inventory configs still work — it was not renamed
+to an `xs_` prefix.
+
+| Item | What it is | Needed when |
+|---|---|---|
+| `pd_drone` | The drone itself | Always. `Config.Inventory.droneItem` |
+| `xs_jammer` | Consumable, used where the player stands | `Config.Jamming.enabled` |
+| `tracker_remover` | Pulls a tracker off yourself | `Config.Tracker.counterplay.removerItem` |
+
+**ox_inventory** — `ox_inventory/data/items.lua`. The `client.event` lines are
+doing real work: ox_inventory does not use the framework's useable-item system,
+so without them the item sits in the slot and does nothing when used.
+
+```lua
+['pd_drone'] = {
+    label = 'Drone', weight = 2500, stack = false, close = true,
+    description = 'Eyes you do not have to risk.',
+    client = { event = 'XS-Drone:client:useItem' },
+},
+['xs_jammer'] = {
+    label = 'Signal Jammer', weight = 800, stack = true, close = true,
+    description = 'Makes somebody else\'s drone useless for a while.',
+    client = { event = 'XS-Drone:client:useJammerItem' },
+},
+['tracker_remover'] = {
+    label = 'Tracker Remover', weight = 400, stack = true, close = true,
+    description = 'Finds what is on you and takes it off.',
+},
+```
+
+**`tracker_remover` has no ox_inventory hook.** It is registered through the
+framework's useable-item system, which ox_inventory bypasses, and there is no
+client event to point `client.event` at. On ox_inventory the item is a prop —
+use the `/removeTracker` command instead, which does the same job. Rename it
+with `Config.Tracker.counterplay.removeCommand`.
+
+**qb-core** — `qb-core/shared/items.lua`:
+
+```lua
+pd_drone        = { name = 'pd_drone',        label = 'Drone',           weight = 2500, type = 'item', image = 'pd_drone.png',        unique = true,  useable = true,  shouldClose = true, description = 'Eyes you do not have to risk.' },
+xs_jammer       = { name = 'xs_jammer',       label = 'Signal Jammer',   weight = 800,  type = 'item', image = 'xs_jammer.png',       unique = false, useable = true,  shouldClose = true, description = 'Makes somebody else\'s drone useless for a while.' },
+tracker_remover = { name = 'tracker_remover', label = 'Tracker Remover', weight = 400,  type = 'item', image = 'tracker_remover.png', unique = false, useable = true,  shouldClose = true, description = 'Finds what is on you and takes it off.' },
+```
+
+**Images.** All three ship in `inventory_images/`, named to match. Copy them
+into your inventory's image folder:
+
+| Inventory | Where |
+|---|---|
+| ox_inventory | `ox_inventory/web/images/` |
+| qb-inventory | `qb-inventory/html/images/` |
+| ps-inventory | `ps-inventory/html/images/` |
+| qs-inventory | `qs-inventory/html/images/` |
+| codem-inventory | `codem-inventory/html/itemimages/` |
+| core_inventory | `core_inventory/html/img/` |
+
+If yours is not listed, put them wherever its existing item PNGs already live.
+Restart the inventory resource afterwards.
 
 ## Configuration
 
@@ -117,7 +179,11 @@ access, so it's safe to leave as-is even for offline/LAN setups.
 
 ## Before going live
 
-- **QBox + ox_inventory**: qbx_core has no server-side "useable item" registration API (unlike qb-core), so the drone and jammer items won't do anything out of the box. In your ox_inventory item definitions, set `client.event` to `XS-Drone:client:useItem` for the drone item and `XS-Drone:client:useJammerItem` for the jammer item. On qb-core this is automatic via `Framework.CreateUseableItem` — no item config changes needed.
+- **On ox_inventory**, the `client.event` lines in the Items section above are
+  not optional — ox_inventory bypasses the framework's useable-item system and
+  only runs what its own item definition names, so without them the drone and
+  jammer do nothing when used. On qb-core with qb-inventory it is automatic and
+  no item config changes are needed.
 - `Config.Drone.model` is a placeholder prop (`ch_prop_casino_drone_02a`) — verify it spawns correctly on your build, or swap in your own.
 - `Config.Tracker.counterplay.vehicleRemoval.zones` ships empty — add your own bay coords or vehicle-tracker removal won't have anywhere to happen.
 - Item name `pd_drone` is unchanged from the original release; the new jammer item (`xs_jammer`) needs adding to your inventory config since it's net-new.
